@@ -9,5 +9,10 @@ lazy val client = (project in file("client")).
   settings(
     name := "metrics-client",
     libraryDependencies ++= rootDependencies,
-    libraryDependencies ++= testDependencies
+    libraryDependencies ++= testDependencies,
+    publishArtifact in Test := true,
+    mappings in (Test, packageBin) ~= { _.filter(_._2.matches(".*\\/metrics\\/test\\/.*"))},
+    mappings in (Test, packageSrc) ~= { _.filter(_._2.matches(".*\\/metrics\\/test\\/.*"))},
+    mappings in (Test, packageDoc) ~= { _.filter(_._2.matches(".*\\/metrics\\/test\\/.*"))}
   )
+
