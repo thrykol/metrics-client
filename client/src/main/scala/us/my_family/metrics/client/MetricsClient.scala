@@ -35,6 +35,10 @@ trait MetricsClient[T] {
 		result
 	}
 
+	/** Close the client
+	 */
+	def close() {}
+
 	/** Set a gauged value.
 	 *
 	 *  @param metric Name of the metric
