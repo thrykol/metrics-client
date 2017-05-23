@@ -5,7 +5,8 @@ object Dependencies {
 
   val rootDependencies = Seq(
     "ch.qos.logback" % "logback-classic" % "1.2.2",
-    "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0"
+    "com.typesafe.scala-logging" %% "scala-logging" % "3.5.0",
+    "com.typesafe" % "config" % "1.3.1"
   )
 
   val testDependencies = Seq(
