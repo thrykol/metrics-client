@@ -1,6 +1,12 @@
 package us.my_family.metrics.client
 
 import us.my_family.metrics.TagMap
+import us.my_family.metrics.configuration.ConfigurationProvider
+
+trait MetricsClientProvider extends ConfigurationProvider {
+
+	lazy val metrics = if (configuration.enabled) NonBlockingClient else NoOpClient
+}
 
 trait MetricsClient[T] {
 

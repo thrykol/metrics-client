@@ -3,10 +3,26 @@ package us.my_family.metrics.client
 import org.scalatest.Matchers
 import org.scalatest.WordSpec
 
+import us.my_family.metrics.configuration.Configuration
 import us.my_family.metrics.test.MetricsClientFixture
-import us.my_family.metrics.TagMap
 
 class MetricsClientSpec extends WordSpec with Matchers {
+
+	"provider" should {
+
+		"provide the NoOpClient singleton" in {
+			new MetricsClientProvider {}.metrics shouldBe theSameInstanceAs(NoOpClient)
+		}
+
+		"provide the NonBlockingClient singleton" in {
+
+			new MetricsClientProvider {
+				override lazy val configuration = new Configuration {
+					override lazy val enabled = true
+				}
+			}.metrics shouldBe theSameInstanceAs(NonBlockingClient)
+		}
+	}
 
 	"increment" should {
 
