@@ -46,7 +46,7 @@ trait MetricsClient[T] {
 	 *  @param tags Tags to apply to the metric
 	 *  @param sampleRate Rate at which the metric should be sampled
 	 */
-	def gauge(metric : String, value : Double, tags : TagMap = Map(), sampleRate : Double = 1.0) : T
+	def gauge(metric : String, value : Double, tags : TagMap, sampleRate : Double) : T
 
 	/** Set a counter value.
 	 *
@@ -55,7 +55,7 @@ trait MetricsClient[T] {
 	 *  @param tags Tags to apply to the metric
 	 *  @param sampleRate Rate at which the metric should be sampled
 	 */
-	def counter(metric : String, value : Long, tags : TagMap = Map(), sampleRate : Double = 1.0) : T
+	def counter(metric : String, value : Long, tags : TagMap, sampleRate : Double) : T
 
 	/** Set a timer value.
 	 *
@@ -64,5 +64,5 @@ trait MetricsClient[T] {
 	 *  @param tags Tags to apply to the metric
 	 *  @param sampleRate Rate at which the metric should be sampled
 	 */
-	def timer(metric : String, duration : Long, tags : TagMap = Map(), sampleRate : Double = 1.0) : T
+	def timer(metric : String, duration : Long, tags : TagMap, sampleRate : Double) : T
 }
