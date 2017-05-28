@@ -12,12 +12,13 @@ import scala.util.Try
 import scala.util.control.NonFatal
 
 import com.typesafe.scalalogging.LazyLogging
+import us.my_family.metrics.configuration.ConfigurationProvider
 
 trait UdpConnectionProvider {
 	lazy val udpConnection = UdpConnection()
 }
 
-case class UdpConnection() extends LazyLogging {
+case class UdpConnection() extends ConfigurationProvider with LazyLogging {
 
 	lazy val executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
 		val delegate = Executors.defaultThreadFactory()
@@ -32,7 +33,7 @@ case class UdpConnection() extends LazyLogging {
 
 	lazy val channel = {
 		val channel = DatagramChannel.open()
-		channel.connect(new InetSocketAddress("localhost", 2185))
+		channel.connect(new InetSocketAddress(configuration.host, configuration.port))
 		channel
 	}
 
@@ -55,7 +56,10 @@ case class UdpConnection() extends LazyLogging {
 	def send(message : String) = {
 		Try {
 			executor.execute(new Runnable() {
-				def run() = channel.write(ByteBuffer.wrap(message.getBytes(Charset.forName("UTF8"))))
+				def run() = {
+					logger.trace("Sending message: {}", message)
+					channel.write(ByteBuffer.wrap(message.getBytes(Charset.forName("UTF8"))))
+				}
 			})
 		} recover {
 			case NonFatal(cause) => {
