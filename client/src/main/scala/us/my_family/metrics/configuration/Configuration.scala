@@ -20,7 +20,7 @@ trait Configuration extends LazyLogging {
 	if (logger.underlying.isInfoEnabled()) {
 		val formatConfig = Try(config.getBoolean("log.format")).toOption.fold(true)(b => b)
 
-		logger.info(config.root.render(ConfigRenderOptions.concise().setFormatted(formatConfig)))
+		logger.info(config.root.render(ConfigRenderOptions.concise().setFormatted(formatConfig)).trim())
 	}
 
 	lazy val base = "us.my_family.metrics"
