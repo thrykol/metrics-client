@@ -145,4 +145,14 @@ class NonBlockingClientSpec extends WordSpec with Matchers with MockFactory {
 			client.timer(metricKey, value, tags)
 		}
 	}
+
+	"close" should {
+
+		"close the UDP connection" in new BaseFixture {
+
+			(udpConnection.close _) expects ()
+
+			client.close()
+		}
+	}
 }

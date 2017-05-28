@@ -27,4 +27,6 @@ trait NonBlockingClient extends MetricsClient[Unit] with UdpConnectionProvider {
 	}
 
 	def timer(metric : String, duration : Long, tags : TagMap = Map(), sampleRate : Double = 1.0) : Unit = udpConnection.send(Metric(metric, Timer, duration.toString, tags, sampleRate))
+
+	override def close() = udpConnection.close()
 }
