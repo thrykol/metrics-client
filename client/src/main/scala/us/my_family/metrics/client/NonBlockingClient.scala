@@ -14,8 +14,6 @@ trait NonBlockingClient extends MetricsClient[Unit] with UdpConnectionProvider {
 
 	def counter(metric : String, value : Long, tags : TagMap = Map(), sampleRate : Double = 1.0) : Unit = udpConnection.send(Metric(metric, Counter, value.toString, tags, sampleRate))
 
-	def gauge(metric : String, value : Double, tags : TagMap, sampleRate : Double) : Unit = gauge(metric, value, tags, sampleRate, false)
-
 	def gauge(metric : String, value : Double, tags : TagMap = Map(), sampleRate : Double = 1.0, isDelta : Boolean = false) : Unit = {
 		lazy val clear : String = Metric(metric, Gauge, "0.0", tags, sampleRate)
 		val gauge : String = Metric(metric, Gauge, value.toString, tags, sampleRate)
