@@ -14,14 +14,21 @@ import us.my_family.metrics.test.LoggingFixture
 import us.my_family.metrics.writers.DogStatsDWriter
 import us.my_family.metrics.writers.StatsDWriter
 import us.my_family.metrics.writers.TelegrafWriter
+import us.my_family.metrics.configuration.MetricFormat
+import us.my_family.metrics.configuration.Configuration
 
 class ConvertersSpec extends WordSpec with Matchers {
 
-	trait BaseFixture extends ConfigurationFixture with LoggingFixture {
+	trait BaseFixture extends LoggingFixture {
 		lazy val metric = Metric("metric.name", Counter, "metric.value", Map(), 1.0)
+		lazy val format : MetricFormat = StatsDFormat
+		lazy val configuration = new Configuration {
+			override lazy val format = BaseFixture.this.format
+		}
 
 		lazy val converters = new Converters {
 			override protected lazy val logger = BaseFixture.this.logger
+			override lazy val configuration = BaseFixture.this.configuration
 		}
 	}
 
@@ -42,21 +49,25 @@ class ConvertersSpec extends WordSpec with Matchers {
 
 			val statsd = new Metric(metric.metric, metric.metricType, metric.value, metric.tags, metric.sampleRate) with StatsDWriter
 
-			Converters.metricToString(statsd) shouldBe statsd.write()
+			converters.metricToString(statsd) shouldBe statsd.write()
 		}
 
 		"convert to DogStatsDFormat" in new BaseFixture {
 
+			override lazy val format = DogStatsDFormat
+
 			val dogstatsd = new Metric(metric.metric, metric.metricType, metric.value, metric.tags, metric.sampleRate) with DogStatsDWriter
 
-			Converters.metricToString(dogstatsd) shouldBe dogstatsd.write()
+			converters.metricToString(dogstatsd) shouldBe dogstatsd.write()
 		}
 
 		"convert to TelegrafFormat" in new BaseFixture {
 
+			override lazy val format = TelegrafFormat
+
 			val telegraf = new Metric(metric.metric, metric.metricType, metric.value, metric.tags, metric.sampleRate) with TelegrafWriter
 
-			Converters.metricToString(telegraf) shouldBe telegraf.write()
+			converters.metricToString(telegraf) shouldBe telegraf.write()
 		}
 	}
 

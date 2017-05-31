@@ -24,6 +24,13 @@ class MetricsClientSpec extends WordSpec with Matchers {
 		}
 	}
 
+	"close" should {
+
+		"be defined" in new MetricsClientFixture {
+			metrics.close()
+		}
+	}
+
 	"increment" should {
 
 		"increment the counter by one" in new MetricsClientFixture {

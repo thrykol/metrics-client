@@ -22,7 +22,7 @@ trait Converters extends ConfigurationProvider with LazyLogging {
 
 	implicit def metricToString(metric : Metric) = {
 
-		Configuration.format match {
+		configuration.format match {
 			case StatsDFormat => new Metric(metric.metric, metric.metricType, metric.value, metric.tags, metric.sampleRate) with StatsDWriter write
 			case DogStatsDFormat => new Metric(metric.metric, metric.metricType, metric.value, metric.tags, metric.sampleRate) with DogStatsDWriter write
 			case TelegrafFormat => new Metric(metric.metric, metric.metricType, metric.value, metric.tags, metric.sampleRate) with TelegrafWriter write
