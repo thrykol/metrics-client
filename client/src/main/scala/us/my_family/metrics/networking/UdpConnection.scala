@@ -18,10 +18,14 @@ trait UdpConnectionProvider {
 	lazy val udpConnection = UdpConnection()
 }
 
-case class UdpConnection() extends ConfigurationProvider with LazyLogging {
+trait ExecutorFactory {
 
-	lazy val executor = Executors.newSingleThreadExecutor(new ThreadFactory() {
-		val delegate = Executors.defaultThreadFactory()
+	def newSingleThreadExecutor(factory : ThreadFactory) = Executors.newSingleThreadExecutor(factory)
+
+	def defaultThreadFactory() = Executors.defaultThreadFactory()
+
+	def threadFactory() : ThreadFactory = new ThreadFactory() {
+		val delegate = defaultThreadFactory()
 
 		def newThread(r : Runnable) = {
 			val result = delegate.newThread(r)
@@ -29,10 +33,22 @@ case class UdpConnection() extends ConfigurationProvider with LazyLogging {
 			result.setDaemon(true)
 			result
 		}
-	})
+	}
+}
+
+trait DatagramFactory {
+	def openDatagramChannel() = DatagramChannel.open()
+}
+
+case class UdpConnection() extends ConfigurationProvider
+		with ExecutorFactory
+		with DatagramFactory
+		with LazyLogging {
+
+	lazy val executor = newSingleThreadExecutor(threadFactory())
 
 	lazy val channel = {
-		val channel = DatagramChannel.open()
+		val channel = openDatagramChannel()
 		channel.connect(new InetSocketAddress(configuration.host, configuration.port))
 		channel
 	}
@@ -47,7 +63,7 @@ case class UdpConnection() extends ConfigurationProvider with LazyLogging {
 		}
 
 		Try {
-			channel.close
+			channel.close()
 		} recover {
 			case NonFatal(cause) => logger.warn("Failed to close datagram channel", cause)
 		}
@@ -57,7 +73,7 @@ case class UdpConnection() extends ConfigurationProvider with LazyLogging {
 		Try {
 			executor.execute(new Runnable() {
 				def run() = {
-					logger.trace("Sending message: {}", message)
+					logger.trace(s"Sending message: ${message}")
 					channel.write(ByteBuffer.wrap(message.getBytes(Charset.forName("UTF8"))))
 				}
 			})
